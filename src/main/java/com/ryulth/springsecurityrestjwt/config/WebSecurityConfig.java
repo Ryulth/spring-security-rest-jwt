@@ -3,6 +3,7 @@ package com.ryulth.springsecurityrestjwt.config;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -32,6 +33,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     );
     private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(API_URLS);
 
+    private static final String[] SWAGGER_URLS = {
+            "/v2/api-docs/**",
+            "/configuration/ui/**",
+            "/swagger-resources/**",
+            "/configuration/security/**",
+            "/swagger-ui.html/**",
+            "/webjars/**"
+    };
 
     JWTTokenAuthenticationProvider provider;
 
@@ -43,11 +52,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(provider);
+        auth.inMemoryAuthentication()
+                .withUser("admin").password(passwordEncoder().encode("1234")).roles("SWAGGER");
     }
 
     @Override
     public void configure(final WebSecurity web) {
         web.ignoring().requestMatchers(API_URLS);
+        web.ignoring().mvcMatchers(HttpMethod.OPTIONS, "/**");
+        web.ignoring().antMatchers(SWAGGER_URLS);
     }
 
     @Override

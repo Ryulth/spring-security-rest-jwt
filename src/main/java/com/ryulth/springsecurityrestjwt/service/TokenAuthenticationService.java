@@ -37,6 +37,11 @@ public class TokenAuthenticationService implements UserAuthenticationService {
     }
 
     @Override
+    public Optional<UserDto> verifyToken(String token) {
+        return Optional.ofNullable(tokenService.verifyToken(token, true));
+    }
+
+    @Override
     public void logout(User user) {
 
     }

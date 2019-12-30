@@ -2,11 +2,13 @@ package com.ryulth.springsecurityrestjwt.service;
 
 import com.ryulth.springsecurityrestjwt.model.User;
 import com.ryulth.springsecurityrestjwt.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -25,6 +27,7 @@ public class UserService {
     }
 
     public User findById(Long id) {
+        log.info("find by id :{}",id);
         return userRepository.findById(id)
                 .orElseThrow(IllegalAccessError::new);
     }

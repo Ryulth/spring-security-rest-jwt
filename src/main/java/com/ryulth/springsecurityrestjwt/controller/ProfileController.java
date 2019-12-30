@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class ProfileController {
 
+    @Deprecated
     @ApiOperation("profile API")
     @GetMapping("/profile")
     public ProfileResponse profileResponse(@AuthenticationPrincipal final User user){
@@ -19,5 +20,11 @@ public class ProfileController {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .build();
+    }
+
+    @ApiOperation("health API")
+    @GetMapping("/tokencheck")
+    public String  profileResponse(){
+        return "Token Check";
     }
 }
