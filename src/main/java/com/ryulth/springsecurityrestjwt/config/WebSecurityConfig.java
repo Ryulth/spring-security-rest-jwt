@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -16,6 +18,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -29,15 +32,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     );
     private static final RequestMatcher PROTECTED_URLS = new NegatedRequestMatcher(API_URLS);
 
-    TokenAuthenticationProvider provider;
 
-    WebSecurityConfig(final TokenAuthenticationProvider provider) {
+    JWTTokenAuthenticationProvider provider;
+
+    WebSecurityConfig(final JWTTokenAuthenticationProvider provider) {
         super();
         this.provider = requireNonNull(provider);
     }
 
     @Override
-    protected void configure(final AuthenticationManagerBuilder auth) {
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(provider);
     }
 
@@ -67,6 +71,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .logout().disable();
+
     }
 
     @Bean
@@ -97,5 +102,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     AuthenticationEntryPoint forbiddenEntryPoint() {
         return new HttpStatusEntryPoint(FORBIDDEN);
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
